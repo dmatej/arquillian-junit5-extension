@@ -3,6 +3,9 @@ package io.github.zforgo.arquillian.junit5.container;
 
 import io.github.zforgo.arquillian.junit5.ArquillianExtension;
 import io.github.zforgo.arquillian.junit5.ArquillianTestClassLifecycleManager;
+
+import java.util.logging.Logger;
+
 import org.jboss.arquillian.container.test.spi.TestRunner;
 import org.jboss.arquillian.container.test.spi.client.deployment.CachedAuxilliaryArchiveAppender;
 import org.jboss.shrinkwrap.api.Archive;
@@ -12,8 +15,10 @@ import org.junit.jupiter.engine.JupiterTestEngine;
 import org.junit.platform.engine.TestEngine;
 
 public class JUnitJupiterDeploymentAppender extends CachedAuxilliaryArchiveAppender {
+    private static final Logger LOG = Logger.getLogger(JUnitJupiterDeploymentAppender.class.getName());
 	@Override
 	protected Archive<?> buildArchive() {
+	    LOG.finest("buildArchive()");
 		JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "arquillian-junit5.jar")
 				.addPackages(
 						true,

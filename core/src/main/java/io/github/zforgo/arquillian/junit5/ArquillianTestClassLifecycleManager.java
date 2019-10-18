@@ -1,13 +1,17 @@
 package io.github.zforgo.arquillian.junit5;
 
+import java.util.logging.Logger;
+
 import org.jboss.arquillian.test.spi.LifecycleMethodExecutor;
 import org.jboss.arquillian.test.spi.TestRunnerAdaptor;
 
 //TODO move to common
 public abstract class ArquillianTestClassLifecycleManager extends AdaptorManager {
+    private static final Logger LOG = Logger.getLogger(ArquillianTestClassLifecycleManager.class.getName());
 
     @Override
     protected void handleSuiteLevelFailure(Throwable initializationException) {
+        LOG.finest(() -> String.format("handleSuiteLevelFailure(initializationException=%s)", initializationException));
         throw new RuntimeException(
             "Arquillian initialization has already been attempted, but failed. See previous exceptions for cause",
             initializationException);
@@ -15,6 +19,7 @@ public abstract class ArquillianTestClassLifecycleManager extends AdaptorManager
 
     @Override
     protected void handleBeforeSuiteFailure(Exception e) throws Exception {
+        LOG.finest(() -> String.format("handleBeforeSuiteFailure(e=%s)", e));
         State.runnerFinished();
         if (State.isLastRunner()) {
             State.clean();
@@ -24,6 +29,7 @@ public abstract class ArquillianTestClassLifecycleManager extends AdaptorManager
 
 
     void beforeTestClassPhase(Class<?> testClass) throws Exception {
+        LOG.finest(() -> String.format("beforeTestClassPhase(testClass=%s)", testClass));
         State.runnerStarted();
         initializeAdaptor();
 

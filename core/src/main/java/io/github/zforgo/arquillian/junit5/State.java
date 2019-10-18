@@ -10,7 +10,7 @@
  * You may obtain a copy of the License at
  * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,  
+ * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -18,6 +18,8 @@
 package io.github.zforgo.arquillian.junit5;
 
 import org.jboss.arquillian.test.spi.TestRunnerAdaptor;
+import org.junit.platform.commons.logging.Logger;
+import org.junit.platform.commons.logging.LoggerFactory;
 
 /**
  * State
@@ -27,6 +29,7 @@ import org.jboss.arquillian.test.spi.TestRunnerAdaptor;
  */
 //TODO merge to common
 public class State {
+    private static final Logger LOG = LoggerFactory.getLogger(State.class);
     /*
      * @HACK
      * JUnit Hack:
@@ -35,14 +38,14 @@ public class State {
      * on client side due to no Exception thrown.
      */
     // Cleaned up in JUnitTestRunner
-    private static ThreadLocal<Throwable> caughtTestException = new ThreadLocal<Throwable>();
+    private static ThreadLocal<Throwable> caughtTestException = new ThreadLocal<>();
 
-    private static ThreadLocal<Throwable> caughtExceptionAfterJunit = new ThreadLocal<Throwable>();
+    private static ThreadLocal<Throwable> caughtExceptionAfterJunit = new ThreadLocal<>();
 
     /*
      * Keep track of previous BeforeSuite initialization exceptions
      */
-    private static ThreadLocal<Throwable> caughtInitializationException = new ThreadLocal<Throwable>();
+    private static ThreadLocal<Throwable> caughtInitializationException = new ThreadLocal<>();
 
     /*
      * @HACK
@@ -66,7 +69,7 @@ public class State {
      * Surefire due to how groups are handled in Surefire.
      */
     private static boolean runningInEclipse = false;
-    private static ThreadLocal<TestRunnerAdaptor> deployableTest = new ThreadLocal<TestRunnerAdaptor>();
+    private static ThreadLocal<TestRunnerAdaptor> deployableTest = new ThreadLocal<>();
 
     static {
         try {
@@ -75,6 +78,7 @@ public class State {
         } catch (Exception e) {
             runningInEclipse = false;
         }
+        LOG.debug(() -> "Running in eclipse: " + runningInEclipse);
     }
 
     public static boolean isRunningInEclipse() {
@@ -104,6 +108,7 @@ public class State {
     }
 
     static void testAdaptor(TestRunnerAdaptor adaptor) {
+        LOG.trace(() -> String.format("testAdaptor(adaptor=%s)", adaptor));
         deployableTest.set(adaptor);
     }
 
@@ -116,6 +121,7 @@ public class State {
     }
 
     static void caughtInitializationException(Throwable throwable) {
+        LOG.warn(() -> String.format("caughtInitializationException(throwable=%s)", throwable));
         caughtInitializationException.set(throwable);
     }
 
@@ -128,6 +134,7 @@ public class State {
     }
 
     public static void caughtTestException(Throwable throwable) {
+        LOG.warn(() -> String.format("caughtTestException(throwable=%s)", throwable));
         if (throwable == null) {
             caughtTestException.remove();
         } else {
